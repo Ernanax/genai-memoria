@@ -1,0 +1,9 @@
+[
+  { "id": "mem-0001", "category": "famille", "text": "Anne est la fille de Jeanne. C'est aussi la mère de Thomas et d'Anaël." },
+  { "id": "mem-0002", "category": "famille", "text": "Thomas et Anaël sont les deux petits-fils de Jeanne : ce sont deux frères, les fils d'Anne. Ce sont eux que Jeanne appelle." },
+  { "id": "mem-0003", "category": "souvenirs", "text": "Le mari de Jeanne est décédé au début de l'année 2026. Jeanne oublie souvent ce décès et appelle pour demander où il est." },
+  { "id": "mem-0004", "category": "sante", "text": "Jeanne a 85 ans, vit seule chez elle et reste autonome : elle se déplace et se fait à manger sans aucun problème." },
+  { "id": "mem-0005", "category": "sante", "text": "La mémoire à court terme de Jeanne est presque éteinte : elle oublie le début de ses phrases, les personnes venues dans la journée et les appels qu'elle vient de passer." },
+  { "id": "mem-0006", "category": "routine", "text": "Des aides-soignantes passent chez Jeanne tous les jours pour l'aider à faire à manger, vérifier que tout va bien et lui tenir compagnie. Elle oublie leur passage juste après." },
+  { "id": "mem-0007", "category": "routine", "text": "Une femme de ménage vient chez Jeanne tous les mercredis." }
+]

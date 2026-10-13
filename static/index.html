@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MemorIA — appeler un proche</title>
+  <style>
+    :root {
+      --bg: #faf6f0; --card: #ffffff; --ink: #3a3532; --soft: #8a817c;
+      --memoria: #f3e8dd; --user: #dcebe3; --accent: #c17f59; --danger: #c0392b;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg);
+           color: var(--ink); margin: 0; display: flex; height: 100vh; }
+    .main { flex: 1; display: flex; flex-direction: column; max-width: 720px; margin: 0 auto;
+            padding: 1.2rem; width: 100%; }
+    header { text-align: center; padding: .4rem 0 1rem; }
+    header h1 { margin: 0; font-size: 2rem; }
+    header p { margin: .2rem 0 0; color: var(--soft); font-size: 1.05rem; }
+
+    /* Choix du proche à appeler */
+    #dialer { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .contacts { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .contact { background: var(--card); border: 2px solid #ece3d8; border-radius: 20px;
+               padding: 1.4rem; text-align: center; cursor: pointer; transition: .15s; }
+    .contact:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .contact .emoji { font-size: 3rem; }
+    .contact .name { font-size: 1.4rem; font-weight: 600; margin-top: .4rem; }
+    .contact .lien { color: var(--soft); font-size: 1rem; }
+
+    /* Écran d'appel */
+    #call { flex: 1; display: none; flex-direction: column; }
+    #log { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: .9rem;
+           padding: .5rem .2rem; }
+    .msg { padding: .9rem 1.2rem; border-radius: 18px; max-width: 85%;
+           font-size: 1.25rem; line-height: 1.5; white-space: pre-wrap; }
+    .memoria { align-self: flex-start; background: var(--memoria); border-bottom-left-radius: 4px; }
+    .user { align-self: flex-end; background: var(--user); border-bottom-right-radius: 4px; }
+    .muted { color: var(--soft); font-style: italic; }
+    .ended { align-self: center; color: var(--soft); font-size: 1rem; text-align: center; padding: .6rem; }
+    form { display: flex; gap: .6rem; padding-top: 1rem; }
+    input { flex: 1; padding: 1rem 1.2rem; font-size: 1.2rem; border: 2px solid #e5ddd3;
+            border-radius: 16px; background: var(--card); }
+    input:focus { outline: none; border-color: var(--accent); }
+    button.send { padding: 0 1.4rem; font-size: 1.15rem; font-weight: 600; color: #fff;
+                  background: var(--accent); border: none; border-radius: 16px; cursor: pointer; }
+    button.send:disabled { opacity: .5; cursor: default; }
+    button.mic { width: 54px; font-size: 1.5rem; border: 2px solid #e5ddd3; background: var(--card);
+                 border-radius: 16px; cursor: pointer; }
+    button.mic.listening { background: var(--danger); border-color: var(--danger); animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .55; } }
+    .toolbar { display: flex; justify-content: space-between; align-items: center; padding-top: .6rem; }
+    .toolbar button { background: none; color: var(--soft); font-size: .9rem; border: none;
+                      cursor: pointer; text-decoration: underline; padding: .3rem .5rem; }
+    .toolbar .hangup { color: var(--danger); }
+
+    aside { width: 320px; background: #f1ebe3; border-left: 1px solid #e5ddd3; padding: 1rem;
+            overflow-y: auto; display: none; }
+    aside.open { display: block; }
+    aside h2 { font-size: .95rem; color: var(--soft); margin: 0 0 .8rem;
+               text-transform: uppercase; letter-spacing: .05em; }
+    .call-trace { font-family: ui-monospace, Menlo, monospace; font-size: .78rem; background: #fff;
+            border-radius: 10px; padding: .5rem .7rem; margin-bottom: .5rem; word-break: break-word; }
+    .call-trace b { color: var(--accent); }
+    .call-trace.alert b { color: var(--danger); }
+    .call-trace .tr-head { display: flex; align-items: baseline; gap: .5rem;
+                           justify-content: space-between; }
+    .why-toggle { background: none; border: none; color: var(--soft); font-size: .72rem;
+                  cursor: pointer; text-decoration: underline; padding: 0; font-family: inherit;
+                  white-space: nowrap; }
+    .call-trace .why { margin-top: .4rem; }
+    .why-txt { margin: .2rem 0; font-size: .78rem; color: #5a5148; line-height: 1.45;
+               font-family: -apple-system, "Segoe UI", Roboto, sans-serif; }
+    .call-trace code { display: block; margin-top: .3rem; font-size: .7rem; color: var(--soft);
+                       word-break: break-word; }
+  </style>
+</head>
+<body>
+  <div class="main">
+    <!-- ÉCRAN 1 : choix du proche -->
+    <div id="dialer">
+      <header>
+        <h1>📞 Qui veux-tu appeler ?</h1>
+        <p>Choisis un proche pour l'appeler</p>
+      </header>
+      <div class="contacts" id="contacts"></div>
+    </div>
+
+    <!-- ÉCRAN 2 : l'appel -->
+    <div id="call">
+      <header>
+        <h1 id="call-title">📞</h1>
+        <p id="call-sub"></p>
+      </header>
+      <div id="log"></div>
+      <form id="f">
+        <button type="button" class="mic" id="mic" title="Parler">🎤</button>
+        <input id="q" autocomplete="off" placeholder="Parle…">
+        <button class="send" id="send" type="submit">Envoyer</button>
+      </form>
+      <div class="toolbar">
+        <button type="button" class="hangup" id="hangup">📞 Raccrocher</button>
+        <label style="font-size:.9rem;color:var(--soft);cursor:pointer;">
+          <input type="checkbox" id="handsfree" checked> mains-libres
+        </label>
+        <label style="font-size:.9rem;color:var(--soft);cursor:pointer;" title="Utilise ElevenLabs (consomme des crédits)">
+          <input type="checkbox" id="realvoice"> voix réaliste
+        </label>
+        <button type="button" id="toggle-trace">voir ce que fait l'agent</button>
+      </div>
+    </div>
+  </div>
+
+  <aside id="trace-panel">
+    <h2>🛠️ Trace de l'agent</h2>
+    <div id="trace"></div>
+  </aside>
+
+  <script>
+    const dialer = document.getElementById("dialer");
+    const call = document.getElementById("call");
+    const contactsBox = document.getElementById("contacts");
+    const log = document.getElementById("log");
+    const traceBox = document.getElementById("trace");
+    const tracePanel = document.getElementById("trace-panel");
+    const f = document.getElementById("f");
+    const q = document.getElementById("q");
+    const send = document.getElementById("send");
+    const mic = document.getElementById("mic");
+    const handsfree = document.getElementById("handsfree");
+
+    let currentContact = null;   // proche appelé
+    let audioEl = null;          // lecture audio en cours
+    let recog = null, listening = false, sttText = "", silenceTimer = null;
+    const SILENCE_MS = 600;      // envoi après 0,6 s de silence
+
+    // ---- Voix de sortie : ElevenLabs via /tts, sinon voix du navigateur ----
+    function stopAudio() {
+      if (audioEl) { audioEl.pause(); audioEl = null; }
+      window.speechSynthesis && speechSynthesis.cancel();
+    }
+    function onSpeakEnd() {
+      if (handsfree.checked && call.style.display !== "none") startListening();
+    }
+    function speakBrowser(text) {
+      if (window.speechSynthesis) {
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = "fr-FR"; u.rate = 0.95; u.onend = onSpeakEnd;
+        speechSynthesis.speak(u);
+      } else { onSpeakEnd(); }
+    }
+    async function speak(text) {
+      stopAudio();
+      // Par défaut : voix navigateur (gratuite). ElevenLabs seulement si "voix réaliste" coché.
+      if (!document.getElementById("realvoice").checked) { speakBrowser(text); return; }
+      try {
+        const res = await fetch("/tts", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, contact: currentContact })
+        });
+        if (res.status === 200) {
+          const blob = await res.blob();
+          audioEl = new Audio(URL.createObjectURL(blob));
+          audioEl.onended = onSpeakEnd;
+          audioEl.play();
+          return;
+        }
+      } catch (e) {}
+      speakBrowser(text);  // voix du navigateur si ElevenLabs est indisponible
+    }
+
+    // ---- Reconnaissance vocale : Web Speech, en français ----
+    function setupRecog() {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) { alert("La reconnaissance vocale marche sur Chrome."); return null; }
+      const r = new SR();
+      r.lang = "fr-FR"; r.interimResults = true; r.continuous = true; r.maxAlternatives = 1;
+      r.onresult = (e) => {
+        let txt = "";
+        for (let i = 0; i < e.results.length; i++) txt += e.results[i][0].transcript;
+        sttText = txt.trim();
+        // dès qu'il y a un silence de SILENCE_MS, on coupe et on envoie
+        if (silenceTimer) clearTimeout(silenceTimer);
+        silenceTimer = setTimeout(() => { try { r.stop(); } catch (e) {} }, SILENCE_MS);
+      };
+      r.onend = () => {
+        listening = false; mic.classList.remove("listening");
+        if (silenceTimer) { clearTimeout(silenceTimer); silenceTimer = null; }
+        const t = sttText; sttText = "";
+        if (t) { q.value = t; f.requestSubmit(); }
+      };
+      r.onerror = () => {
+        listening = false; mic.classList.remove("listening");
+        if (silenceTimer) { clearTimeout(silenceTimer); silenceTimer = null; }
+      };
+      return r;
+    }
+    function startListening() {
+      if (!recog) recog = setupRecog();
+      if (!recog || listening) return;
+      stopAudio(); sttText = "";
+      try { recog.start(); listening = true; mic.classList.add("listening"); } catch (e) {}
+    }
+    mic.onclick = () => { if (listening) recog.stop(); else startListening(); };
+
+    document.getElementById("toggle-trace").onclick = () => tracePanel.classList.toggle("open");
+    document.getElementById("hangup").onclick = async () => {
+      const btn = document.getElementById("hangup");
+      btn.disabled = true; btn.textContent = "📞 …";
+      stopAudio(); if (listening && recog) recog.stop();
+      try { await fetch("/hangup", { method: "POST" }); } catch (e) {}
+      btn.disabled = false; btn.textContent = "📞 Raccrocher";
+      showDialer();
+    };
+
+    // Chargement des proches
+    async function loadContacts() {
+      const res = await fetch("/contacts");
+      const list = await res.json();
+      contactsBox.innerHTML = list.map(c => `
+        <div class="contact" data-id="${c.id}">
+          <div class="emoji">${c.emoji}</div>
+          <div class="name">${c.prenom}</div>
+          <div class="lien">${c.lien}</div>
+        </div>`).join("");
+      contactsBox.querySelectorAll(".contact").forEach(el =>
+        el.addEventListener("click", () => startCall(el.dataset.id)));
+    }
+
+    function showDialer() {
+      call.style.display = "none";
+      dialer.style.display = "flex";
+    }
+
+    async function startCall(contactId) {
+      const res = await fetch("/call", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contact: contactId })
+      });
+      const data = await res.json();
+      dialer.style.display = "none";
+      call.style.display = "flex";
+      log.innerHTML = ""; traceBox.innerHTML = "";
+      document.getElementById("call-title").textContent = "📞 " + data.contact.prenom;
+      document.getElementById("call-sub").textContent = "Appel avec " + data.contact.lien;
+      q.placeholder = "Parle à " + data.contact.prenom + "…";
+      currentContact = data.contact.id;
+      add("memoria", data.greeting);
+      speak(data.greeting);
+      q.focus();
+    }
+
+    function add(cls, text) {
+      const d = document.createElement("div");
+      d.className = "msg " + cls;
+      d.textContent = text;
+      log.appendChild(d);
+      d.scrollIntoView({ behavior: "smooth", block: "end" });
+      return d;
+    }
+
+    const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+
+    function addTrace(t) {
+      const d = document.createElement("div");
+      const isAlert = t.tool === "alert_family" || t.tool === "SMS alerte";
+      d.className = "call-trace" + (isAlert ? " alert" : "");
+      const why = t.why ? esc(t.why) : "";
+      const details = t.input ? esc(JSON.stringify(t.input)).slice(0, 300) : "";
+      d.innerHTML =
+        '<div class="tr-head"><b>' + esc(t.tool) + "</b>" +
+        (why ? ' <button class="why-toggle" type="button">pourquoi ?</button>' : "") +
+        "</div>" +
+        '<div class="why" hidden>' +
+          (why ? '<p class="why-txt">' + why + "</p>" : "") +
+          (details ? "<code>" + details + "</code>" : "") +
+        "</div>";
+      const btn = d.querySelector(".why-toggle");
+      if (btn) btn.onclick = () => {
+        const w = d.querySelector(".why");
+        w.hidden = !w.hidden;
+        btn.textContent = w.hidden ? "pourquoi ?" : "masquer";
+      };
+      traceBox.appendChild(d);
+      d.scrollIntoView({ block: "end" });
+    }
+
+    async function sendMessage(message) {
+      send.disabled = true;
+      const pending = add("memoria muted", "…");
+      try {
+        const res = await fetch("/chat", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message })
+        });
+        const data = await res.json();
+        pending.remove();
+        (data.trace || []).forEach(addTrace);
+        add("memoria", data.reply);
+        speak(data.reply);
+        if (data.ended) {
+          const d = document.createElement("div");
+          d.className = "ended";
+          d.textContent = "📞 Appel terminé — le résumé a été envoyé à la famille.";
+          log.appendChild(d);
+          setTimeout(showDialer, 2500);
+        }
+      } catch (e) {
+        pending.remove();
+        add("memoria muted", "Petit souci de connexion… réessaie.");
+      } finally {
+        send.disabled = false; q.focus();
+      }
+    }
+
+    f.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const message = q.value.trim();
+      if (!message) return;
+      add("user", message);
+      q.value = "";
+      sendMessage(message);
+    });
+
+    loadContacts();
+  </script>
+</body>
+</html>

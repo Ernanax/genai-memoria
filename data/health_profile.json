@@ -1,0 +1,33 @@
+{
+  "pathologie": "Troubles cognitifs sévères de la mémoire à court terme (mémoire immédiate presque éteinte). Autonome physiquement.",
+  "baseline": "Appelle presque chaque jour, le plus souvent pour demander où est son mari (elle oublie qu'il est décédé début 2026). Répète les mêmes questions, oublie les appels et les visites récents. Reste autonome pour tous les gestes du quotidien.",
+  "signaux_a_surveiller": [
+    "Détresse ou angoisse marquée qui ne s'apaise pas (souvent liée à la recherche de son mari)",
+    "Mention d'une chute, d'une douleur, d'un malaise",
+    "Confusion inhabituelle sur son domicile ou son environnement",
+    "Mention d'un danger domestique (gaz, eau qui coule, porte ouverte, personne inconnue)",
+    "Nombre d'appels très supérieur à son habitude"
+  ],
+  "observations": [
+    {
+      "timestamp": "2026-07-05T16:22:00",
+      "observation": "Oublie régulièrement que son mari est décédé et le cherche, surtout en fin de journée.",
+      "category": "confusion_forte"
+    },
+    {
+      "timestamp": "2026-07-06T14:12:00",
+      "observation": "Répète plusieurs fois la même question (le jour de la semaine, les visites) au cours d'un même appel.",
+      "category": "repetition"
+    },
+    {
+      "timestamp": "2026-07-07T21:15:00",
+      "observation": "Anxiété plus marquée en soirée : sentiment de solitude et peur dans le noir.",
+      "category": "humeur"
+    },
+    {
+      "timestamp": "2026-07-08T22:40:00",
+      "observation": "Épisode d'agitation nocturne avec volonté de sortir chercher son mari. Physiquement autonome, aucune chute.",
+      "category": "confusion_forte"
+    }
+  ]
+}

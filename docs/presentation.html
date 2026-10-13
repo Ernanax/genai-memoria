@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MemorIA · le compagnon mémoire</title>
+<style>
+  :root{
+    --bg:#faf6f1; --card:#ffffff; --ink:#241f1b; --soft:#8a8079; --line:#ece3d9;
+    --accent:#c17f59; --accent-d:#a9673f; --accent-soft:#f3e8dd;
+    --plum:#7a5c74; --sky:#3d7ea6; --sage:#5a8a6b; --urgent:#c0392b;
+    --hero:#241b17;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:-apple-system,"Segoe UI",Roboto,Helvetica,sans-serif;
+       background:var(--bg);color:var(--ink);line-height:1.6}
+  h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.15;margin:0}
+  a{color:inherit}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 1.4rem}
+  section{padding:5rem 0}
+  .eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:.72rem;font-weight:700;
+           color:var(--accent);font-family:-apple-system,sans-serif;margin-bottom:.7rem}
+  .lead{font-size:1.12rem;color:#4a423b;max-width:60ch}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:50;background:rgba(250,246,241,.85);
+      backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+  .brand{font-family:Georgia,serif;font-weight:700;font-size:1.15rem;display:flex;gap:.4rem;align-items:center}
+  .navlinks{display:flex;gap:1.4rem;font-size:.9rem;font-weight:500}
+  .navlinks a{color:var(--soft);text-decoration:none;transition:color .15s}
+  .navlinks a:hover{color:var(--accent)}
+  @media(max-width:760px){.navlinks{display:none}}
+
+  /* hero */
+  .hero{background:radial-gradient(1200px 500px at 70% -10%,#3a2b23 0%,var(--hero) 55%);
+        color:#f6efe8;padding:6.5rem 0 6rem;text-align:center}
+  .hero .flower{font-size:3.4rem}
+  .hero h1{font-size:4rem;margin:.4rem 0 .3rem;letter-spacing:-.01em}
+  .hero .sub{font-size:1.35rem;color:#e6d3c3;font-family:Georgia,serif;font-style:italic}
+  .hero p.desc{max-width:56ch;margin:1.6rem auto 0;color:#cdbdb0;font-size:1.05rem}
+  .hero .tags{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-top:2rem}
+  .hero .tags span{border:1px solid #5a463b;border-radius:999px;padding:.35rem .9rem;
+                   font-size:.8rem;color:#e6d3c3}
+
+  /* generic */
+  .grid{display:grid;gap:1.2rem}
+  .cols-2{grid-template-columns:1fr 1fr}
+  .cols-3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:820px){.cols-2,.cols-3{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.5rem}
+  .card h3{font-size:1.15rem;margin-bottom:.5rem}
+  .card .ic{font-size:1.7rem;margin-bottom:.4rem}
+  .card p{margin:0;font-size:.95rem;color:#544b44}
+  .alt{background:var(--accent-soft)}
+
+  h2.big{font-size:2.3rem;margin-bottom:.5rem}
+
+  /* problem stats */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:2rem}
+  @media(max-width:760px){.stats{grid-template-columns:1fr}}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.6rem;text-align:center}
+  .stat .n{font-family:Georgia,serif;font-size:2.4rem;color:var(--accent);font-weight:700}
+  .stat .l{font-size:.92rem;color:var(--soft);margin-top:.3rem}
+
+  /* chat mockup */
+  .phone{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:1.2rem;
+         box-shadow:0 20px 40px -24px rgba(60,40,25,.35)}
+  .phone .top{text-align:center;font-size:.82rem;color:var(--soft);border-bottom:1px solid var(--line);
+              padding-bottom:.6rem;margin-bottom:.9rem}
+  .msg{max-width:82%;padding:.55rem .85rem;border-radius:15px;font-size:.94rem;margin:.45rem 0}
+  .msg.her{background:var(--bg);border-bottom-left-radius:4px}
+  .msg.him{background:var(--accent);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
+  .msg small{display:block;font-size:.68rem;opacity:.7;margin-bottom:.15rem}
+
+  /* loop */
+  .loop{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin-top:2rem}
+  .loop .step{flex:1;min-width:180px;background:var(--card);border:1px solid var(--line);
+              border-radius:16px;padding:1.3rem;text-align:center}
+  .loop .step .k{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  .loop .step h3{font-size:1.15rem;margin:.3rem 0 .4rem}
+  .loop .step p{font-size:.9rem;color:#544b44;margin:0}
+
+  /* tools table */
+  table{width:100%;border-collapse:collapse;margin-top:1.4rem;font-size:.92rem;background:var(--card);
+        border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  th,td{text-align:left;padding:.7rem .95rem;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--accent-soft);font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--accent-d)}
+  tr:last-child td{border-bottom:none}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:.85em;background:#f1e9df;
+       padding:.1rem .35rem;border-radius:5px;color:var(--accent-d)}
+
+  /* architecture */
+  .arch{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.8rem}
+  @media(max-width:760px){.arch{grid-template-columns:1fr}}
+  .box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.25rem}
+  .box .t{font-weight:700;font-family:Georgia,serif;margin-bottom:.25rem}
+  .box .f{font-family:ui-monospace,monospace;font-size:.8rem;color:var(--accent-d)}
+  .box p{margin:.4rem 0 0;font-size:.88rem;color:#544b44}
+  .flow{text-align:center;color:var(--soft);font-size:.85rem;margin:1.2rem 0 0}
+
+  /* bricks */
+  .brick{border-left:4px solid var(--accent);padding-left:1rem}
+  .brick.b1{border-color:var(--sky)} .brick.b2{border-color:var(--plum)} .brick.b3{border-color:var(--sage)}
+
+  /* demo steps */
+  ol.demo{counter-reset:s;list-style:none;padding:0;margin:1.8rem 0 0}
+  ol.demo li{position:relative;padding:.2rem 0 1.3rem 3rem;border-left:2px solid var(--line);margin-left:1rem}
+  ol.demo li:last-child{border-left:2px solid transparent}
+  ol.demo li::before{counter-increment:s;content:counter(s);position:absolute;left:-1rem;top:-.1rem;
+    width:2rem;height:2rem;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;
+    display:flex;align-items:center;justify-content:center;font-size:.9rem}
+  ol.demo li b{display:block;font-family:Georgia,serif;font-size:1.05rem}
+  ol.demo li span{font-size:.93rem;color:#544b44}
+
+  footer{background:var(--hero);color:#cdbdb0;padding:3rem 0;text-align:center;font-size:.9rem}
+  footer .brand{color:#f6efe8;justify-content:center;margin-bottom:.6rem;font-size:1.3rem}
+  .pill{display:inline-block;background:#3a2b23;border:1px solid #5a463b;border-radius:999px;
+        padding:.3rem .8rem;margin:.25rem;font-size:.82rem;color:#e6d3c3}
+
+  .note{font-size:.82rem;color:var(--soft);font-style:italic;margin-top:1.5rem}
+
+  /* why agent : version aérée */
+  #why .lead{text-align:center}
+  .why-input{max-width:620px;margin:3rem auto 0;background:var(--card);border:1px solid var(--line);
+    border-radius:18px;padding:2rem 2.2rem;font-family:Georgia,serif;font-size:1.35rem;
+    color:#3a322c;font-style:italic;line-height:1.5;box-shadow:0 18px 34px -24px rgba(60,40,25,.3)}
+  .why-split{display:flex;align-items:stretch;justify-content:center;gap:1.6rem;
+    margin-top:3rem;flex-wrap:wrap}
+  .why-path{flex:1;max-width:330px;padding:2.2rem 1.6rem;border-radius:18px;
+    background:var(--card);border:1px solid var(--line)}
+  .why-path.bad{border-top:4px solid var(--urgent)}
+  .why-path.good{border-top:4px solid var(--sage)}
+  .why-path .pi{font-size:2.6rem}
+  .why-path .pk{font-family:Georgia,serif;font-weight:700;font-size:1.2rem;margin:.6rem 0 .9rem}
+  .why-path p{margin:0;font-size:1.02rem;color:#544b44;line-height:1.65}
+  .why-arrow{display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-style:italic;font-size:1.6rem;color:var(--soft)}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="brand">🌸 MemorIA</div>
+    <div class="navlinks">
+      <a href="#probleme">Problème</a>
+      <a href="#idee">La solution</a>
+      <a href="#fonctionnement">Fonctionnement</a>
+      <a href="#features">Fonctionnalités</a>
+      <a href="#why">Agent vs workflow</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="flower">🌸</div>
+    <h1>MemorIA</h1>
+    <div class="sub">le compagnon mémoire</div>
+    <p class="desc">Un agent IA qui répond aux appels d'une personne âgée atteinte de troubles
+      de la mémoire <b>avec la voix d'un proche</b>. Il s'appuie sur ses vrais souvenirs, veille
+      sur elle et prévient la vraie famille quand ça compte.</p>
+    <div class="tags">
+      <span>👤 Anaël Ernadote</span>
+      <span>👤 Thomas Sinapi</span>
+      <span>Hackathon · Generative AI M2</span>
+    </div>
+  </div>
+</header>
+
+<!-- PROBLÈME -->
+<section id="probleme">
+  <div class="wrap">
+    <div class="eyebrow">Le contexte</div>
+    <h2 class="big">Vieillir seul avec des pertes de mémoire</h2>
+    <p class="lead">Les personnes atteintes de troubles cognitifs débutants appellent leurs
+      enfants en boucle, oublient leurs médicaments, et se sentent seules. La famille, elle,
+      ne peut pas toujours décrocher et culpabilise.</p>
+    <div class="stats">
+      <div class="stat"><div class="n">×10</div><div class="l">le même appel, la même question, dans la journée</div></div>
+      <div class="stat"><div class="n">8h · 20h</div><div class="l">médicaments oubliés faute de repère</div></div>
+      <div class="stat"><div class="n">1 voix</div><div class="l">celle d'un proche suffit à rassurer</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- IDÉE -->
+<section id="idee" class="alt">
+  <div class="wrap">
+    <div class="grid cols-2" style="align-items:center;gap:2.5rem">
+      <div>
+        <div class="eyebrow">La solution</div>
+        <h2 class="big">L'agent incarne un proche</h2>
+        <p class="lead">MemorIA ne se présente pas comme un assistant : il <b>joue le membre de la
+          famille</b> que la personne appelle. Première personne, petits noms, souvenirs partagés retrouvés par RAG.</p>
+        <p class="lead" style="margin-top:1rem">Quand le vrai proche ne peut pas décrocher,
+          MemorIA prend le relais, pour que maman ait toujours quelqu'un qu'elle aime au bout du fil.</p>
+      </div>
+      <div class="phone">
+        <div class="top">📞 Jeanne appelle Thomas</div>
+        <div class="msg him"><small>Thomas</small>Allô mamie ? C'est Thomas. Comment tu vas aujourd'hui ?</div>
+        <div class="msg her"><small>Jeanne</small>Quel jour on est déjà ?</div>
+        <div class="msg him"><small>Thomas</small>On est mercredi, mamie, un beau mercredi de juillet ! Tu as arrosé tes rosiers « Pierre de Ronsard » ?</div>
+        <div class="msg her"><small>Jeanne</small>Tu viens me voir quand ?</div>
+        <div class="msg him"><small>Thomas</small>Je passe samedi matin avec les croissants. Plus que deux dodos !</div>
+      </div>
+    </div>
+    <p class="note">🕊️ <b>Cadre éthique assumé :</b> dispositif configuré et validé par la famille
+      et le médecin, consentement de la personne dans un moment de lucidité, escalade systématique
+      vers de vrais proches en cas de danger, aucune décision médicale. La présence, pas la tromperie.</p>
+  </div>
+</section>
+
+<!-- FONCTIONNEMENT -->
+<section id="fonctionnement">
+  <div class="wrap">
+    <div class="eyebrow">L'agent</div>
+    <h2 class="big">Une boucle d'agent à chaque message</h2>
+    <p class="lead">Chaque phrase de Jeanne lance une boucle en trois temps : <b>raisonner, agir, observer</b>.
+      Claude Haiku décide seul s'il a besoin d'un outil MCP et lequel, puis recommence jusqu'à pouvoir répondre.</p>
+    <div class="loop">
+      <div class="step"><div class="k">Raisonner</div><h3>🧠</h3><p>Comprendre ce que dit Jeanne, choisir le ton et décider si un outil est nécessaire.</p></div>
+      <div class="step"><div class="k">Agir</div><h3>🔌</h3><p>Appeler un outil MCP : retrouver un souvenir, consulter les rappels, alerter la famille…</p></div>
+      <div class="step"><div class="k">Observer</div><h3>👁️</h3><p>Lire le résultat, puis répondre avec tendresse ou relancer la boucle s'il manque une information.</p></div>
+    </div>
+
+    <h3 style="font-size:1.3rem;margin:2.5rem 0 0">Les outils de l'agent en appel</h3>
+    <table>
+      <tr><th>Outil</th><th>Rôle</th></tr>
+      <tr><td><code>recall_context</code></td><td>RAG sur les souvenirs de Jeanne, <b>filtré selon le proche incarné</b></td></tr>
+      <tr><td><code>check_recent_conversations</code></td><td>Relit les appels du jour pour rester cohérent et repérer les répétitions</td></tr>
+      <tr><td><code>get_reminders</code></td><td>Date, heure, médicaments, rendez-vous du jour</td></tr>
+      <tr><td><code>update_memory</code></td><td>Propose un nouveau souvenir, soumis à la <b>validation de la famille</b></td></tr>
+      <tr><td><code>update_health_profile</code></td><td>Propose une observation de santé, soumise à la validation de la famille</td></tr>
+      <tr><td><code>alert_family</code></td><td>Alerte <b>urgent / warning / info</b> : affichée en temps réel, envoyée par SMS, puis validée</td></tr>
+      <tr><td><code>log_conversation</code> · <code>end_conversation</code></td><td>Résumé de fin d'appel puis clôture en douceur</td></tr>
+    </table>
+    <p class="note">+ 4 outils réservés à la famille (validation des propositions, ingestion de souvenirs), invisibles pour l'agent en appel.</p>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="alt">
+  <div class="wrap">
+    <div class="eyebrow">L'agent</div>
+    <h2 class="big">Fonctionnalités clés</h2>
+    <div class="grid cols-3" style="margin-top:2rem">
+      <div class="card"><div class="ic">👥</div><h3>Cloisonnement par personne</h3><p>Chaque souvenir a un périmètre <code>known_by</code>. Ce que Jeanne dit à Thomas ne remonte pas quand l'agent joue Anaël.</p></div>
+      <div class="card"><div class="ic">✅</div><h3>Validation famille</h3><p>Souvenirs, santé et alertes sont communiqués en temps réel, mais n'entrent en base qu'après approbation (human-in-the-loop).</p></div>
+      <div class="card"><div class="ic">🚨</div><h3>Détection & escalade</h3><p>En cas de chute, de confusion ou de danger, alerte immédiate sur le tableau de bord et SMS à la vraie famille.</p></div>
+      <div class="card"><div class="ic">💬</div><h3>Historique des discussions</h3><p>Chaque appel est sauvegardé intégralement, consultable au clic depuis l'espace famille.</p></div>
+      <div class="card"><div class="ic">➕</div><h3>Assistant d'enrichissement</h3><p>Un chatbot interroge la famille pour nourrir la base (2 modes : conversation libre, ou première prise d'infos guidée).</p></div>
+      <div class="card"><div class="ic">🛠️</div><h3>Trace transparente</h3><p>À chaque réponse, l'agent explique <i>pourquoi</i> il dit ça. L'explication est repliable et permet de suivre sa réflexion.</p></div>
+    </div>
+    <div class="grid cols-2" style="margin-top:1.2rem">
+      <div class="card"><div class="ic">🖥️</div><h3>Deux visages, un agent</h3><p>L'écran chaleureux de Jeanne (le chat), et le tableau de bord famille en menu épuré : vue d'ensemble, alertes, discussions, suivi santé, récap.</p></div>
+      <div class="card"><div class="ic">📊</div><h3>Suivi dans le temps</h3><p>Graphique d'activité 7 jours (appels + alertes), timeline des observations : un vrai signal pour la famille et le médecin.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY AN AGENT -->
+<section id="why">
+  <div class="wrap" style="text-align:center">
+    <div class="eyebrow">L'agent</div>
+    <h2 class="big" style="font-size:2.7rem">Pourquoi un agent, pas un workflow</h2>
+    <p class="lead" style="margin:1.1rem auto 0">Un scénario <b>figé</b> suit toujours le même
+      chemin. Un <b>agent</b> observe ce qui arrive et change de cap en temps réel.</p>
+
+    <div class="why-input">« Je te parle de mes rosiers…<br>
+      <b>et soudain : je suis tombée dans la cuisine. »</b></div>
+
+    <div class="why-split">
+      <div class="why-path bad">
+        <div class="pi">🧱</div>
+        <div class="pk">Pipeline figé</div>
+        <p>Continue sur les rosiers.<br><b>Rate la chute.</b></p>
+      </div>
+      <div class="why-arrow">vs</div>
+      <div class="why-path good">
+        <div class="pi">🤖</div>
+        <div class="pk">Agent MemorIA</div>
+        <p>Détecte le danger, alerte la famille,<br>reste en ligne. <b>Il s'adapte.</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="brand">🌸 MemorIA</div>
+    <p>MemorIA ne remplace pas la famille. Il lui donne une voix quand elle ne peut pas répondre,<br>
+       et la prévient quand ça compte vraiment.</p>
+    <div style="margin-top:1.2rem">
+      <span class="pill">Haiku 4.5</span>
+      <span class="pill">Flask</span>
+      <span class="pill">MCP (stdio)</span>
+      <span class="pill">ChromaDB</span>
+      <span class="pill">sentence-transformers</span>
+      <span class="pill">Twilio (SMS)</span>
+    </div>
+    <p style="margin-top:1.4rem;color:#8a7566;font-size:.8rem">Generative AI · M2 IASD · Hackathon · Track 1</p>
+  </div>
+</footer>
+
+<script>
+  // surligne le lien de nav de la section visible
+  const links=[...document.querySelectorAll('.navlinks a')];
+  const map=new Map(links.map(a=>[a.getAttribute('href').slice(1),a]));
+  const obs=new IntersectionObserver((es)=>{
+    es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.style.color='');
+      const a=map.get(e.target.id); if(a)a.style.color='var(--accent)';}});
+  },{rootMargin:'-45% 0px -50% 0px'});
+  document.querySelectorAll('section[id]').forEach(s=>obs.observe(s));
+</script>
+</body>
+</html>

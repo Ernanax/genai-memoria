@@ -1,0 +1,30 @@
+[
+  {
+    "timestamp": "2026-07-05T16:25:00",
+    "urgency": "warning",
+    "reason": "Anxiété : Jeanne attend son mari pour le dîner et s'inquiète de son absence.",
+    "details": "Épisode d'anxiété lié à l'oubli du décès, en fin d'après-midi. Apaisée à la fin de l'appel. À surveiller si cela se répète le soir.",
+    "seen": true
+  },
+  {
+    "timestamp": "2026-07-07T21:12:00",
+    "urgency": "warning",
+    "reason": "Détresse en soirée : Jeanne se sent seule et a peur dans le noir.",
+    "details": "Recherche son mari, angoisse vespérale. Rassurée par Thomas resté en ligne. Envisager un appel systématique en début de soirée.",
+    "seen": true
+  },
+  {
+    "timestamp": "2026-07-08T22:34:00",
+    "urgency": "urgent",
+    "reason": "Errance nocturne : Jeanne voulait sortir dans la rue en pleine nuit pour chercher son mari.",
+    "details": "Risque de sortie nocturne. Thomas l'a convaincue de rester ; famille et aide-soignante prévenues. Vérifier la fermeture de la porte le soir.",
+    "seen": false
+  },
+  {
+    "timestamp": "2026-07-09T09:32:00",
+    "urgency": "info",
+    "reason": "Bonne matinée : Jeanne sereine, petit-déjeuner pris.",
+    "details": "Aucune inquiétude particulière ce matin. Elle a demandé après son mari mais est restée calme.",
+    "seen": false
+  }
+]

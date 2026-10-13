@@ -1,0 +1,213 @@
+[
+  {
+    "timestamp": "2026-07-03T10:20:00",
+    "summary": "Jeanne a appelé pour demander où était son mari. Thomas l'a rassurée avec douceur et a parlé de sa matinée. Appel court et apaisé.",
+    "mood": "Inquiète au début, rassurée ensuite",
+    "topics": [
+      "mari",
+      "matinée"
+    ],
+    "questions_asked": [
+      "Où est ton grand-père ?"
+    ],
+    "flags": [
+      "oubli du décès"
+    ]
+  },
+  {
+    "timestamp": "2026-07-03T17:05:00",
+    "summary": "Deuxième appel : Jeanne redemande si quelqu'un passe la voir. Anaël lui rappelle le passage de l'aide-soignante et lui a parlé de son piano.",
+    "mood": "Calme",
+    "topics": [
+      "visites",
+      "piano"
+    ],
+    "questions_asked": [
+      "Est-ce que quelqu'un vient aujourd'hui ?"
+    ],
+    "flags": [
+      "répétition",
+      "oubli des visites"
+    ]
+  },
+  {
+    "timestamp": "2026-07-04T11:30:00",
+    "summary": "Jeanne cherche son mari, un peu perdue sur le jour. Thomas la recentre en douceur et évoque un souvenir heureux. Elle finit rassurée.",
+    "mood": "Un peu confuse puis apaisée",
+    "topics": [
+      "mari",
+      "jour"
+    ],
+    "questions_asked": [
+      "Quel jour on est ?",
+      "Où est-il parti ?"
+    ],
+    "flags": [
+      "oubli du décès",
+      "désorientation temporelle légère"
+    ]
+  },
+  {
+    "timestamp": "2026-07-05T09:45:00",
+    "summary": "Appel du matin serein. Jeanne a demandé des nouvelles d'Anaël et de son piano. Pas d'inquiétude particulière.",
+    "mood": "Sereine",
+    "topics": [
+      "piano",
+      "nouvelles"
+    ],
+    "questions_asked": [],
+    "flags": []
+  },
+  {
+    "timestamp": "2026-07-05T16:20:00",
+    "summary": "Fin d'après-midi plus agitée : Jeanne répète qu'elle attend son mari pour le dîner. Anaël l'apaise et réoriente. Léger signe d'anxiété.",
+    "mood": "Anxieuse",
+    "topics": [
+      "mari",
+      "dîner"
+    ],
+    "questions_asked": [
+      "Il rentre quand pour manger ?"
+    ],
+    "flags": [
+      "oubli du décès",
+      "anxiété légère"
+    ]
+  },
+  {
+    "timestamp": "2026-07-06T14:10:00",
+    "summary": "Appel calme. Jeanne avait oublié le passage de l'aide-soignante du matin, Thomas le lui rappelle gentiment. Bonne humeur.",
+    "mood": "Bonne humeur",
+    "topics": [
+      "visites"
+    ],
+    "questions_asked": [
+      "Personne n'est venu aujourd'hui ?"
+    ],
+    "flags": [
+      "oubli des visites"
+    ]
+  },
+  {
+    "timestamp": "2026-07-07T11:50:00",
+    "summary": "Jeanne demande où est son mari et quel jour on est. Thomas répond avec patience et la rassure. Appel affectueux.",
+    "mood": "Un peu perdue puis rassurée",
+    "topics": [
+      "mari",
+      "jour"
+    ],
+    "questions_asked": [
+      "Où est ton grand-père ?",
+      "Quel jour sommes-nous ?"
+    ],
+    "flags": [
+      "oubli du décès",
+      "répétition"
+    ]
+  },
+  {
+    "timestamp": "2026-07-07T15:40:00",
+    "summary": "Jeanne attend son mari depuis le matin. Anaël l'apaise, propose de lui jouer du piano le soir. Elle termine sereine.",
+    "mood": "Inquiète puis apaisée",
+    "topics": [
+      "mari",
+      "piano"
+    ],
+    "questions_asked": [
+      "Tu sais où il est ?"
+    ],
+    "flags": [
+      "oubli du décès"
+    ]
+  },
+  {
+    "timestamp": "2026-07-07T21:10:00",
+    "summary": "Appel du soir difficile : Jeanne se sent seule et a peur dans le noir, elle cherche son mari. Thomas reste en ligne pour la rassurer. Anxiété vespérale.",
+    "mood": "Angoissée, apaisée en fin d'appel",
+    "topics": [
+      "mari",
+      "solitude",
+      "peur"
+    ],
+    "questions_asked": [
+      "Pourquoi il n'est pas là ce soir ?"
+    ],
+    "flags": [
+      "oubli du décès",
+      "anxiété vespérale"
+    ]
+  },
+  {
+    "timestamp": "2026-07-08T10:15:00",
+    "summary": "Jeanne demande le jour ; Thomas lui rappelle que c'est mercredi et que la femme de ménage passe. Elle avait oublié que Thomas était venu recharger son téléphone la veille.",
+    "mood": "Calme",
+    "topics": [
+      "jour",
+      "téléphone",
+      "ménage"
+    ],
+    "questions_asked": [
+      "Quel jour on est ?"
+    ],
+    "flags": [
+      "oubli d'un événement récent"
+    ]
+  },
+  {
+    "timestamp": "2026-07-08T18:50:00",
+    "summary": "Appel du soir. Jeanne reparle de son mari, Anaël la réoriente vers un moment doux. Un peu d'inquiétude au coucher.",
+    "mood": "Nostalgique",
+    "topics": [
+      "mari",
+      "coucher"
+    ],
+    "questions_asked": [
+      "Il rentre bientôt ?"
+    ],
+    "flags": [
+      "oubli du décès"
+    ]
+  },
+  {
+    "timestamp": "2026-07-08T22:34:00",
+    "summary": "Appel de nuit préoccupant : Jeanne voulait sortir dans la rue pour chercher son mari. Thomas l'a convaincue de rester au chaud et a prévenu la famille. Risque d'errance nocturne.",
+    "mood": "Très agitée",
+    "topics": [
+      "mari",
+      "sortie nocturne"
+    ],
+    "questions_asked": [
+      "Je vais le chercher dehors, d'accord ?"
+    ],
+    "flags": [
+      "oubli du décès",
+      "errance nocturne",
+      "danger"
+    ]
+  },
+  {
+    "timestamp": "2026-07-09T09:30:00",
+    "summary": "Appel du matin. Jeanne cherche à nouveau son mari mais reste calme. Anaël la rassure et prend de ses nouvelles. Bon petit-déjeuner pris.",
+    "mood": "Calme",
+    "topics": [
+      "mari",
+      "petit-déjeuner"
+    ],
+    "questions_asked": [
+      "Tu as vu ton grand-père ?"
+    ],
+    "flags": [
+      "oubli du décès"
+    ]
+  },
+  {
+    "timestamp": "2026-07-09T13:15:00",
+    "summary": "Court appel de midi. Jeanne voulait juste entendre une voix. Thomas lui a raconté sa journée, elle a ri. Moment tendre.",
+    "mood": "Joyeuse",
+    "topics": [
+      "nouvelles"
+    ],
+    "questions_asked": [],
+    "flags": []
+  }
+]

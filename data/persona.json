@@ -1,0 +1,39 @@
+{
+  "prenom": "Jeanne",
+  "nom": "(à préciser)",
+  "age": 85,
+  "ville": "(à préciser)",
+  "situation": "Veuve depuis le début de l'année 2026 : son mari est décédé. Elle vit seule chez elle et reste entièrement autonome physiquement — aucun problème de mobilité, elle se fait à manger toute seule.",
+  "memoire": "Sa mémoire à court terme est presque entièrement éteinte. Elle oublie le début de ses propres phrases, les personnes venues dans la journée, et les appels qu'elle vient tout juste de passer. Sa mémoire ancienne est mieux préservée.",
+  "raison_des_appels": "Depuis le décès de son mari, elle oublie qu'il est parti et appelle presque chaque jour, souvent inquiète, pour demander où il est. C'est le motif principal de ses appels.",
+  "famille": {
+    "fille": {
+      "prenom": "Anne",
+      "lien": "fille de Jeanne, et mère de Thomas et Anaël",
+      "details": "(à compléter)"
+    },
+    "petits_fils": [
+      { "prenom": "Thomas", "lien": "petit-fils (fils d'Anne), frère d'Anaël", "details": "(à compléter) — c'est l'un des deux proches que Jeanne appelle." },
+      { "prenom": "Anaël", "lien": "petit-fils (fils d'Anne), frère de Thomas", "details": "(à compléter) — c'est l'un des deux proches que Jeanne appelle." }
+    ],
+    "mari": {
+      "prenom": "(à préciser)",
+      "details": "Décédé au début de l'année 2026. Jeanne oublie souvent ce décès et demande où il est."
+    }
+  },
+  "sante": {
+    "pathologie": "Troubles cognitifs sévères de la mémoire à court terme (mémoire immédiate presque éteinte). Autonome pour tous les gestes du quotidien.",
+    "aides": "Des aides-soignantes passent tous les jours (aide aux repas, vérification que tout va bien, compagnie). Une femme de ménage vient tous les mercredis."
+  },
+  "routine": {
+    "quotidien": "Autonome : elle se lève, se déplace et se fait à manger seule. Des aides-soignantes passent chaque jour l'aider et lui tenir compagnie — elle oublie leur passage juste après leur départ.",
+    "hebdomadaire": "Femme de ménage tous les mercredis."
+  },
+  "reperes_importants": [
+    "Motif n°1 des appels : elle demande où est son mari, car elle oublie qu'il est décédé.",
+    "COMMENT LUI RÉPONDRE SUR SON MARI (par défaut, À VALIDER PAR LA FAMILLE) : ne pas lui ré-annoncer brutalement le décès à chaque appel, car cela lui ferait revivre le deuil à chaque fois ; l'accueillir avec tendresse, reconnaître son émotion, la rassurer et la réorienter doucement vers un sujet apaisant.",
+    "Sa mémoire immédiate est éteinte : elle peut répéter la même question ou perdre le fil de sa phrase — ne jamais le lui reprocher, reprendre avec douceur et patience.",
+    "Elle oublie les visites (aides-soignantes, femme de ménage) et les appels qu'elle vient de passer.",
+    "Ne jamais la contredire brutalement quand elle se trompe : reformuler avec tendresse."
+  ]
+}

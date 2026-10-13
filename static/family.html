@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MemorIA — espace famille</title>
+  <style>
+    :root {
+      --bg: #f4f5f7; --card: #fff; --ink: #232629; --soft: #7a8087; --line: #eef0f2;
+      --accent: #c17f59; --accent-soft: #f3e8dd;
+      --urgent: #c0392b; --warning: #d68910; --info: #2471a3;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg);
+           color: var(--ink); margin: 0; }
+    button { font-family: inherit; }
+
+    /* --- Mise en page : menu latéral et contenu --- */
+    .app { display: grid; grid-template-columns: 236px 1fr; min-height: 100vh; }
+    .nav { background: var(--card); border-right: 1px solid var(--line); padding: 1.2rem .9rem;
+           display: flex; flex-direction: column; gap: .25rem; position: sticky; top: 0;
+           height: 100vh; }
+    .brand { font-size: 1.15rem; font-weight: 700; margin: 0 .3rem 1.2rem; }
+    .brand small { display: block; font-size: .72rem; font-weight: 500; color: var(--soft);
+                   margin-top: .15rem; letter-spacing: .02em; }
+    .nav .item { display: flex; align-items: center; justify-content: space-between; gap: .5rem;
+                 width: 100%; text-align: left; background: none; border: none; cursor: pointer;
+                 padding: .6rem .7rem; border-radius: 9px; font-size: .93rem; color: var(--ink); }
+    .nav .item:hover { background: var(--bg); }
+    .nav .item.active { background: var(--accent-soft); color: #7a4a2a; font-weight: 600; }
+    .nav .item .badge { min-width: 1.25rem; text-align: center; font-size: .72rem; font-weight: 700;
+                        color: #fff; background: var(--accent); border-radius: 999px; padding: 0 .4rem; }
+    .nav .item .badge.alert { background: var(--urgent); }
+    .nav .who { margin-top: auto; padding: .7rem; font-size: .78rem; color: var(--soft);
+                border-top: 1px solid var(--line); }
+
+    .content { padding: 1.6rem 1.8rem; max-width: 920px; }
+    .content h1 { font-size: 1.35rem; margin: 0 0 1.1rem; }
+    section { display: none; }
+    section.active { display: block; }
+
+    /* --- Cartes et éléments --- */
+    .card { background: var(--card); border-radius: 14px; padding: 1.1rem 1.3rem;
+            box-shadow: 0 1px 4px rgba(0,0,0,.06); margin-bottom: 1.2rem; }
+    .card h2 { margin: 0 0 .8rem; font-size: 1.02rem; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+    @media (max-width: 720px) { .row2 { grid-template-columns: 1fr; } }
+    .empty { color: var(--soft); font-size: .9rem; font-style: italic; }
+    .ts { color: var(--soft); font-size: .78rem; }
+
+    .stat-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .stat { flex: 1; min-width: 120px; background: var(--card); border-radius: 12px;
+            padding: .9rem 1rem; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+    .stat .n { font-size: 1.7rem; font-weight: 700; }
+    .stat .l { font-size: .8rem; color: var(--soft); }
+    .stat.alert .n { color: var(--urgent); }
+
+    .banner { background: var(--accent-soft); border-radius: 12px; padding: .9rem 1.1rem;
+              margin-bottom: 1.2rem; }
+    .banner b { font-size: .95rem; }
+    .banner p { margin: .3rem 0 0; font-size: .85rem; color: #6b5340; }
+
+    .alert { border-radius: 10px; padding: .7rem .9rem; margin-bottom: .6rem; background: #fdf2f0; }
+    .alert.urgent  { background: #fdecea; } .alert.warning { background: #fef5e7; }
+    .alert.info    { background: #ebf2fa; }
+    .alert .tag { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+    .alert.urgent .tag { color: var(--urgent); } .alert.warning .tag { color: var(--warning); }
+    .alert.info .tag { color: var(--info); }
+    .alert p { margin: .25rem 0 0; font-size: .92rem; }
+    .alert.seen { opacity: .55; }
+    .alert .seen-tag { font-size: .66rem; color: var(--soft); border: 1px solid var(--line);
+                       border-radius: 6px; padding: 0 .3rem; text-transform: uppercase; }
+    .seen-btn { margin-top: .5rem; background: none; border: 1px solid var(--line); color: var(--soft);
+                font-size: .78rem; padding: .25rem .6rem; border-radius: 7px; cursor: pointer; }
+    .seen-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .linkbtn { background: none; border: none; color: var(--info); font-weight: 600; font-size: .85rem;
+               cursor: pointer; padding: 0; }
+    .linkbtn:disabled { color: var(--soft); cursor: default; }
+
+    .obs { font-size: .88rem; padding: .45rem 0; border-bottom: 1px dashed var(--line); }
+    .obs:last-child { border-bottom: none; }
+
+    button.primary { padding: .7rem 1.2rem; font-size: .95rem; font-weight: 600; color: #fff;
+                     background: var(--accent); border: none; border-radius: 10px; cursor: pointer; }
+    button.primary:disabled { opacity: .5; }
+    #recap-out { white-space: pre-wrap; font-size: .93rem; line-height: 1.55; margin-top: .9rem; display: none; }
+
+    /* --- Éléments à valider --- */
+    .pending { border-left: 3px solid var(--accent); background: #fbf6f1; border-radius: 10px;
+               padding: .7rem .9rem; margin-bottom: .7rem; }
+    .pending.type-health { border-left-color: var(--info); background: #eef4fa; }
+    .pending.type-alert  { border-left-color: var(--warning); background: #fef5e7; }
+    .pending.type-alert.urgent { border-left-color: var(--urgent); background: #fdecea; }
+    .pending .cat { font-size: .72rem; font-weight: 700; text-transform: uppercase;
+                    letter-spacing: .05em; color: var(--accent); }
+    .pending .cat.tag-urgent { color: var(--urgent); } .pending .cat.tag-warning { color: var(--warning); }
+    .pending .cat.tag-info { color: var(--info); }
+    .pending .scope { font-size: .72rem; color: var(--soft); font-style: italic; }
+    .pending p { margin: .3rem 0 .6rem; font-size: .92rem; line-height: 1.45; }
+    .pending .btns { display: flex; gap: .5rem; }
+    .pending button { padding: .4rem .9rem; font-size: .85rem; border-radius: 8px; border: none;
+                      color: #fff; font-weight: 600; cursor: pointer; }
+    .pending .approve { background: #1e8449; } .pending .reject { background: var(--soft); }
+
+    /* --- Graphique d'activité --- */
+    .legend { display: flex; gap: 1.1rem; font-size: .78rem; color: var(--soft); margin-bottom: .7rem; }
+    .legend .dot { display: inline-block; width: 10px; height: 10px; border-radius: 2px;
+                   margin-right: .35rem; vertical-align: middle; }
+    .legend .dot.calls { background: var(--accent); } .legend .dot.urgent { background: var(--urgent); }
+    .legend .dot.warning { background: var(--warning); }
+    .chart { display: flex; align-items: flex-end; gap: .5rem; height: 108px; padding-top: 18px; }
+    .day { flex: 1; display: flex; flex-direction: column; align-items: center; gap: .35rem; }
+    .plot { display: flex; align-items: flex-end; gap: 3px; height: 80px; }
+    .bar { width: 15px; border-radius: 4px 4px 0 0; position: relative; }
+    .bar.calls { background: var(--accent); }
+    .bar.alerts { display: flex; flex-direction: column; justify-content: flex-end; }
+    .seg { width: 15px; } .seg.warning { background: var(--warning); }
+    .seg.urgent { background: var(--urgent); border-radius: 0 0 4px 4px; }
+    .bar .cnt { position: absolute; top: -15px; left: 0; right: 0; text-align: center;
+                font-size: .7rem; font-weight: 600; color: var(--soft); }
+    .day .lbl { font-size: .7rem; color: var(--soft); }
+
+    /* --- Discussions (historique et détail) --- */
+    .disc { display: flex; align-items: center; gap: .8rem; width: 100%; text-align: left;
+            background: var(--card); border: 1px solid var(--line); border-radius: 11px;
+            padding: .8rem 1rem; margin-bottom: .6rem; cursor: pointer; }
+    .disc:hover { border-color: var(--accent); background: #fdfaf7; }
+    .disc .av { font-size: 1.3rem; }
+    .disc .mid { flex: 1; min-width: 0; }
+    .disc .mid .sum { font-size: .92rem; margin: .15rem 0 0; overflow: hidden;
+                      text-overflow: ellipsis; white-space: nowrap; }
+    .disc .mid .meta { font-size: .78rem; color: var(--soft); }
+    .disc .chev { color: var(--soft); font-size: 1.1rem; }
+    .disc .pill { font-size: .7rem; color: var(--info); font-weight: 600; }
+
+    .back { background: none; border: none; color: var(--info); font-weight: 600; cursor: pointer;
+            padding: 0 0 .8rem; font-size: .9rem; }
+    .turn { font-size: .92rem; line-height: 1.5; margin: .55rem 0; }
+    .turn .name { font-weight: 600; font-size: .78rem; text-transform: uppercase; letter-spacing: .03em;
+                  display: block; margin-bottom: .1rem; }
+    .turn.jeanne .name { color: var(--soft); }
+    .turn.proche .name { color: var(--accent); }
+    .turn .bubble { background: var(--bg); border-radius: 10px; padding: .5rem .75rem; display: inline-block; }
+    .turn.proche .bubble { background: var(--accent-soft); }
+
+    /* --- Assistant d'enrichissement --- */
+    .mode-tabs { display: flex; gap: .4rem; margin-bottom: .9rem; }
+    .mode-tab { background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
+                padding: .4rem .85rem; font-size: .85rem; cursor: pointer; color: var(--soft); }
+    .mode-tab.active { background: var(--accent-soft); border-color: var(--accent);
+                       color: #7a4a2a; font-weight: 600; }
+    .chatbox { max-height: 340px; overflow-y: auto; display: flex; flex-direction: column;
+               gap: .5rem; margin-bottom: .9rem; padding: .2rem; }
+    .msg { max-width: 82%; padding: .55rem .8rem; border-radius: 13px; font-size: .92rem;
+           line-height: 1.45; white-space: pre-wrap; }
+    .msg.family { align-self: flex-end; background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
+    .msg.assistant { align-self: flex-start; background: var(--bg); border-bottom-left-radius: 4px; }
+    .chat-input { display: flex; gap: .5rem; }
+    .chat-input input { flex: 1; padding: .65rem .85rem; border: 1px solid var(--line);
+                        border-radius: 9px; font-size: .95rem; font-family: inherit; }
+    .asst-actions { display: flex; gap: 1.3rem; margin-top: .8rem; }
+    .prop { display: flex; align-items: flex-start; gap: .65rem; padding: .65rem .8rem;
+            border: 1px solid var(--line); border-radius: 10px; margin-bottom: .5rem; cursor: pointer; }
+    .prop:has(input:not(:checked)) { opacity: .5; }
+    .prop input { margin-top: .25rem; }
+    .prop .pmeta { font-size: .7rem; font-weight: 700; color: var(--accent); white-space: nowrap;
+                   text-transform: uppercase; letter-spacing: .03em; padding-top: .1rem; }
+    .prop .ptext { font-size: .9rem; line-height: 1.45; }
+
+    /* --- Trace de l'agent (raisonnement repliable) --- */
+    .call-trace { font-family: ui-monospace, Menlo, monospace; font-size: .78rem; background: var(--bg);
+                  border-radius: 10px; padding: .5rem .7rem; margin-bottom: .5rem; word-break: break-word; }
+    .call-trace b { color: var(--accent); }
+    .call-trace .tr-head { display: flex; align-items: baseline; gap: .5rem; justify-content: space-between; }
+    .why-toggle { background: none; border: none; color: var(--soft); font-size: .72rem;
+                  cursor: pointer; text-decoration: underline; padding: 0; font-family: inherit; white-space: nowrap; }
+    .call-trace .why { margin-top: .4rem; }
+    .why-txt { margin: .2rem 0; font-size: .78rem; color: #5a5148; line-height: 1.45;
+               font-family: -apple-system, "Segoe UI", Roboto, sans-serif; }
+    .call-trace code { display: block; margin-top: .3rem; font-size: .7rem; color: var(--soft); word-break: break-word; }
+    .agent-trace { margin-top: .8rem; max-height: 300px; overflow-y: auto; border-top: 1px solid var(--line); padding-top: .8rem; }
+
+    /* --- Mobile : le menu devient une barre en haut --- */
+    @media (max-width: 640px) {
+      .app { grid-template-columns: 1fr; }
+      .nav { flex-direction: row; height: auto; position: static; overflow-x: auto; gap: .3rem;
+             align-items: center; padding: .6rem; }
+      .brand, .nav .who { display: none; }
+      .nav .item { width: auto; white-space: nowrap; }
+      .content { padding: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="nav">
+      <div class="brand">🌸 MemorIA <small>espace famille</small></div>
+      <button class="item active" data-sec="overview">🏠 Vue d'ensemble</button>
+      <button class="item" data-sec="validate">✅ À valider <span class="badge" id="b-validate" style="display:none">0</span></button>
+      <button class="item" data-sec="alerts">🚨 Alertes <span class="badge alert" id="b-alerts" style="display:none">0</span></button>
+      <button class="item" data-sec="calls">💬 Discussions</button>
+      <button class="item" data-sec="health">🩺 Suivi santé</button>
+      <button class="item" data-sec="assistant">➕ Enrichir la base</button>
+      <button class="item" data-sec="recap">📝 Récap famille</button>
+      <div class="who" id="who">…</div>
+    </aside>
+
+    <main class="content">
+      <!-- Vue d'ensemble -->
+      <section id="sec-overview" class="active">
+        <h1>Vue d'ensemble</h1>
+        <div class="banner" id="role-banner" style="display:none">
+          <b>🎭 MemorIA répond à la place du proche appelé</b>
+          <p>Peut incarner : <span id="role-name"></span></p>
+          <p id="role-consent"></p>
+        </div>
+        <div class="stat-row" style="margin-bottom:1.2rem">
+          <div class="stat"><div class="n" id="s-calls">0</div><div class="l">appels aujourd'hui</div></div>
+          <div class="stat"><div class="n" id="s-pending">0</div><div class="l">infos à valider</div></div>
+          <div class="stat alert"><div class="n" id="s-alerts">0</div><div class="l">alertes non lues</div></div>
+        </div>
+        <div class="card">
+          <h2>📊 Activité des 7 derniers jours</h2>
+          <div class="legend">
+            <span><i class="dot calls"></i>Appels</span>
+            <span><i class="dot urgent"></i>Urgent</span>
+            <span><i class="dot warning"></i>Warning</span>
+          </div>
+          <div class="chart" id="chart"></div>
+        </div>
+        <div class="card">
+          <h2>🚨 Dernières alertes</h2>
+          <div id="ov-alerts"><span class="empty">Aucune alerte.</span></div>
+        </div>
+      </section>
+
+      <!-- À valider -->
+      <section id="sec-validate">
+        <h1>À valider après l'appel</h1>
+        <div class="card">
+          <p style="font-size:.88rem; color:var(--soft); margin:0 0 1rem">
+            Souvenirs, observations de santé et alertes remontés pendant les appels. Ils vous sont
+            communiqués en temps réel, mais n'entrent dans la base (mémoire, dossier santé, journal
+            d'alertes) que si vous les validez.</p>
+          <div id="pending"><span class="empty">Rien à valider pour le moment.</span></div>
+        </div>
+      </section>
+
+      <!-- Alertes -->
+      <section id="sec-alerts">
+        <h1>Alertes</h1>
+        <div class="card"><div id="alerts"><span class="empty">Aucune alerte.</span></div></div>
+      </section>
+
+      <!-- Discussions -->
+      <section id="sec-calls">
+        <h1>Historique des discussions</h1>
+        <div id="disc-list"></div>
+        <div id="disc-detail" style="display:none"></div>
+      </section>
+
+      <!-- Suivi santé -->
+      <section id="sec-health">
+        <h1>Suivi santé</h1>
+        <div class="card">
+          <h2>🩺 Profil</h2>
+          <p id="patho" style="font-size:.9rem; color:var(--soft)"></p>
+        </div>
+        <div class="card">
+          <h2>Observations</h2>
+          <div id="obs"></div>
+        </div>
+      </section>
+
+      <!-- Enrichir la base (assistant conversationnel) -->
+      <section id="sec-assistant">
+        <h1>Enrichir la base de Jeanne</h1>
+        <div class="card" style="background:var(--accent-soft)">
+          <p style="margin:0; font-size:.9rem; color:#6b5340;">
+            Discutez avec l'assistant : racontez-lui des souvenirs, des habitudes, des nouvelles
+            de Jeanne. Quand vous avez terminé, il vous <b>proposera les informations à ajouter</b> —
+            vous refusez celles qui sont fausses et validez le reste.</p>
+        </div>
+        <div class="card">
+          <div class="mode-tabs">
+            <button class="mode-tab active" data-mode="free" id="mode-free">💬 Conversation</button>
+            <button class="mode-tab" data-mode="intake" id="mode-intake">📋 Première prise d'infos</button>
+          </div>
+          <div id="asst-chat" class="chatbox"></div>
+          <div class="chat-input">
+            <input id="asst-input" placeholder="Racontez quelque chose sur Jeanne…" autocomplete="off">
+            <button class="primary" id="asst-send">Envoyer</button>
+          </div>
+          <div class="asst-actions">
+            <button class="linkbtn" id="asst-finish">✓ Terminer et proposer les infos</button>
+            <button class="linkbtn" id="asst-reset">↺ Nouvelle conversation</button>
+            <button class="linkbtn" id="asst-trace-toggle">🛠️ voir ce que fait l'agent</button>
+          </div>
+          <div id="asst-agent-trace" class="agent-trace" style="display:none"></div>
+        </div>
+        <div class="card" id="asst-proposals" style="display:none"></div>
+      </section>
+
+      <!-- Récap famille -->
+      <section id="sec-recap">
+        <h1>Récapitulatif pour la famille</h1>
+        <div class="card">
+          <button class="primary" id="recap-btn">Générer le récap de la période</button>
+          <div id="recap-out"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const fmt = (ts) => {
+      const d = new Date(ts);
+      return d.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" })
+             + " " + d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+    };
+    const esc = (s) => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
+    const cap = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+
+    let STATE = null;
+    let activeSection = "overview";
+    let openDiscussionId = null;   // transcription ouverte (bloque le rafraîchissement)
+
+    // --- Navigation ---
+    document.querySelectorAll(".nav .item").forEach(btn => {
+      btn.onclick = () => showSection(btn.dataset.sec);
+    });
+    function showSection(name) {
+      activeSection = name; openDiscussionId = null;
+      document.querySelectorAll(".nav .item").forEach(b =>
+        b.classList.toggle("active", b.dataset.sec === name));
+      document.querySelectorAll("main section").forEach(s =>
+        s.classList.toggle("active", s.id === "sec-" + name));
+      if (name === "assistant") renderAsstChat();
+      if (STATE) renderSection(name);
+    }
+    function renderSection(name) {
+      if (!STATE) return;
+      if (name === "overview") renderOverview();
+      else if (name === "validate") renderPending();
+      else if (name === "alerts") renderAlerts();
+      else if (name === "calls") renderDiscussionList();
+      else if (name === "health") renderHealth();
+    }
+
+    // --- Données ---
+    async function refresh() {
+      STATE = await (await fetch("/family/data")).json();
+      updateChrome(STATE);
+      // Rafraîchit la section active, sans fermer une transcription ouverte.
+      if (!(activeSection === "calls" && openDiscussionId)) renderSection(activeSection);
+    }
+
+    function updateChrome(d) {
+      document.getElementById("who").textContent =
+        `${d.persona.prenom}, ${d.persona.age} ans · ${d.persona.ville}`;
+      const pend = (d.pending || []).length;
+      const unseen = (d.alerts || []).filter(a => !a.seen).length;
+      setBadge("b-validate", pend, false);
+      setBadge("b-alerts", unseen, true);
+    }
+    function setBadge(id, n, isAlert) {
+      const el = document.getElementById(id);
+      el.textContent = n; el.style.display = n ? "inline-block" : "none";
+    }
+
+    // --- Vue d'ensemble ---
+    function renderOverview() {
+      const d = STATE;
+      document.getElementById("patho") &&
+        (document.getElementById("patho").textContent = d.persona.pathologie);
+      if (d.companion) {
+        document.getElementById("role-banner").style.display = "block";
+        document.getElementById("role-name").textContent =
+          d.companion.roster || `${d.companion.role} (${d.companion.lien})`;
+        document.getElementById("role-consent").textContent = d.companion.consentement;
+      }
+      const today = (d.daily || []).slice(-1)[0] || { calls: 0 };
+      document.getElementById("s-calls").textContent = today.calls;
+      document.getElementById("s-pending").textContent = (d.pending || []).length;
+      document.getElementById("s-alerts").textContent = (d.alerts || []).filter(a => !a.seen).length;
+      renderChart(d.daily || []);
+      document.getElementById("ov-alerts").innerHTML =
+        d.alerts.length ? d.alerts.slice(0, 3).map(a => alertHTML(a, false)).join("")
+                        : '<span class="empty">Aucune alerte.</span>';
+    }
+
+    function alertHTML(a, withBtn) {
+      const seenTag = a.seen ? '<span class="seen-tag">lu</span>' : "";
+      const btn = (withBtn && !a.seen)
+        ? `<button class="seen-btn" onclick="markSeen('${a.timestamp}',this)">✓ Marquer comme lu</button>` : "";
+      return `
+        <div class="alert ${a.urgency}${a.seen ? " seen" : ""}">
+          <span class="tag">${a.urgency}</span> <span class="ts">${fmt(a.timestamp)}</span> ${seenTag}
+          <p><b>${esc(a.reason)}</b>${a.details ? "<br>" + esc(a.details) : ""}</p>
+          ${btn}
+        </div>`;
+    }
+
+    function renderAlerts() {
+      const alerts = STATE.alerts || [];
+      const anyUnseen = alerts.some(a => !a.seen);
+      const head = alerts.length
+        ? `<div style="margin-bottom:.8rem"><button class="linkbtn" ${anyUnseen ? "" : "disabled"}
+             onclick="markSeen(null,this)">Tout marquer comme lu</button></div>` : "";
+      document.getElementById("alerts").innerHTML = alerts.length
+        ? head + alerts.map(a => alertHTML(a, true)).join("")
+        : '<span class="empty">Aucune alerte.</span>';
+    }
+
+    async function markSeen(ts, btn) {
+      if (btn) btn.disabled = true;
+      await fetch("/family/alerts/seen", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(ts ? { timestamp: ts } : {}),
+      });
+      await refresh();
+    }
+
+    function renderHealth() {
+      document.getElementById("patho").textContent = STATE.persona.pathologie;
+      document.getElementById("obs").innerHTML = (STATE.health.observations || [])
+        .slice(-12).reverse().map(o =>
+          `<div class="obs"><span class="ts">${fmt(o.timestamp)}</span> — ${esc(o.observation)}</div>`
+        ).join("") || '<span class="empty">Aucune observation.</span>';
+    }
+
+    // --- Éléments à valider ---
+    function renderPending() {
+      const pending = STATE.pending || [];
+      document.getElementById("pending").innerHTML = pending.length
+        ? pending.map(renderPendingItem).join("")
+        : '<span class="empty">Rien à valider pour le moment.</span>';
+    }
+    function renderPendingItem(p) {
+      const pl = p.payload || {}; let head, body;
+      if (p.type === "memory") {
+        const who = p.source_contact ? `confié à ${cap(esc(p.source_contact))}` : "connu de tous";
+        head = `<span class="cat">🧠 Souvenir · ${esc(pl.category || "")}</span> <span class="scope">${who}</span>`;
+        body = esc(pl.text);
+      } else if (p.type === "health") {
+        head = `<span class="cat">🩺 Santé · ${esc(pl.category || "")}</span>`;
+        body = esc(pl.observation);
+      } else {
+        head = `<span class="cat tag-${esc(pl.urgency)}">🚨 Alerte · ${esc(pl.urgency)}</span>`;
+        body = `<b>${esc(pl.reason)}</b>${pl.details ? "<br>" + esc(pl.details) : ""}`;
+      }
+      return `
+        <div class="pending type-${esc(p.type)} ${p.type === "alert" ? esc(pl.urgency) : ""}">
+          ${head} <span class="ts">${fmt(p.proposed_at)}</span>
+          <p>${body}</p>
+          <div class="btns">
+            <button class="approve" onclick="decide('${esc(p.id)}','approve',this)">✓ Valider</button>
+            <button class="reject"  onclick="decide('${esc(p.id)}','reject',this)">✗ Refuser</button>
+          </div>
+        </div>`;
+    }
+    async function decide(id, action, btn) {
+      btn.closest(".pending").querySelectorAll("button").forEach(b => b.disabled = true);
+      await fetch("/family/validation/" + action, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      await refresh();
+    }
+
+    // --- Discussions (historique et détail) ---
+    function transcriptFor(call) {
+      const ct = new Date(call.timestamp).getTime();
+      let best = null, bestDelta = Infinity;
+      for (const t of (STATE.transcripts || [])) {
+        const delta = Math.abs(new Date(t.ended_at).getTime() - ct);
+        if (delta < bestDelta) { bestDelta = delta; best = t; }
+      }
+      return (best && bestDelta < 300000) ? best : null;
+    }
+
+    function renderDiscussionList() {
+      openDiscussionId = null;
+      document.getElementById("disc-detail").style.display = "none";
+      const list = document.getElementById("disc-list");
+      list.style.display = "block";
+      const calls = STATE.calls || [];
+      list.innerHTML = calls.length ? calls.map((c, i) => {
+        const t = transcriptFor(c);
+        return `
+          <button class="disc" onclick="openDiscussion(${i})">
+            <span class="av">💬</span>
+            <span class="mid">
+              <span class="meta">${fmt(c.timestamp)} · humeur : ${esc(c.mood)}
+                ${t ? `· <span class="pill">conversation (${t.turns})</span>` : ""}</span>
+              <p class="sum">${esc(c.summary)}</p>
+            </span>
+            <span class="chev">›</span>
+          </button>`;
+      }).join("") : '<span class="empty">Aucune discussion enregistrée.</span>';
+    }
+
+    async function openDiscussion(i) {
+      const c = STATE.calls[i];
+      const t = transcriptFor(c);
+      openDiscussionId = t ? t.id : ("recap-" + i);
+      document.getElementById("disc-list").style.display = "none";
+      const box = document.getElementById("disc-detail");
+      box.style.display = "block";
+
+      const recap = `
+        <button class="back" onclick="renderDiscussionList()">← Retour aux discussions</button>
+        <div class="card">
+          <h2>Résumé de l'appel</h2>
+          <p class="ts">${fmt(c.timestamp)} · humeur : ${esc(c.mood)}</p>
+          <p style="font-size:.93rem; line-height:1.5">${esc(c.summary)}</p>
+          ${c.topics && c.topics.length ? `<p class="ts">Sujets : ${esc(c.topics.join(" · "))}</p>` : ""}
+          ${c.flags && c.flags.length ? `<p style="color:var(--warning);font-size:.82rem">⚠ ${esc(c.flags.join(" · "))}</p>` : ""}
+        </div>`;
+
+      if (!t) { box.innerHTML = recap + '<div class="card"><span class="empty">Transcription complète non disponible pour cet appel.</span></div>'; return; }
+
+      box.innerHTML = recap + '<div class="card"><h2>💬 Conversation complète</h2><div id="turns"><span class="empty">Chargement…</span></div></div>';
+      const full = await (await fetch("/family/transcript/" + t.id)).json();
+      const dur = Math.max(1, Math.round((new Date(full.ended_at) - new Date(full.started_at)) / 60000));
+      document.getElementById("turns").innerHTML =
+        `<p class="ts" style="margin-top:-.3rem">Avec ${esc(full.contact)} (${esc(full.lien)}) · durée ~${dur} min</p>` +
+        (full.turns || []).map(x => {
+          const me = x.speaker !== "Jeanne";
+          return `<div class="turn ${me ? "proche" : "jeanne"}">
+                    <span class="name">${esc(x.speaker)}</span>
+                    <span class="bubble">${esc(x.text)}</span>
+                  </div>`;
+        }).join("");
+    }
+
+    // --- Graphique ---
+    function renderChart(daily) {
+      const H = 80;
+      const max = Math.max(1, ...daily.map(d => Math.max(d.calls, d.urgent + d.warning)));
+      const px = (n) => Math.round((n / max) * H);
+      document.getElementById("chart").innerHTML = daily.map(d => {
+        const lbl = new Date(d.date + "T12:00:00").toLocaleDateString("fr-FR", { weekday: "short", day: "numeric" });
+        const alerts = d.urgent + d.warning;
+        return `
+          <div class="day">
+            <div class="plot">
+              <div class="bar calls" style="height:${px(d.calls)}px" title="${d.calls} appel(s)">
+                ${d.calls ? `<span class="cnt">${d.calls}</span>` : ""}</div>
+              <div class="bar alerts" title="${d.urgent} urgent · ${d.warning} warning">
+                ${d.warning ? `<div class="seg warning" style="height:${px(d.warning)}px"></div>` : ""}
+                ${d.urgent ? `<div class="seg urgent" style="height:${px(d.urgent)}px"></div>` : ""}
+                ${alerts ? `<span class="cnt">${alerts}</span>` : ""}</div>
+            </div>
+            <span class="lbl">${lbl}</span>
+          </div>`;
+      }).join("");
+    }
+
+    // --- Récapitulatif ---
+    document.getElementById("recap-btn").onclick = async (e) => {
+      const btn = e.target, out = document.getElementById("recap-out");
+      btn.disabled = true; btn.textContent = "Rédaction en cours…";
+      try {
+        const d = await (await fetch("/family/recap", { method: "POST" })).json();
+        out.style.display = "block"; out.textContent = d.recap;
+      } finally {
+        btn.disabled = false; btn.textContent = "Générer le récap de la période";
+      }
+    };
+
+    // --- Assistant d'enrichissement ---
+    let asstMsgs = [];   // affichage côté client ; le serveur garde la vraie conversation
+    const WELCOME = "Bonjour ! Je suis l'assistant de MemorIA. Racontez-moi ce que vous aimeriez "
+      + "ajouter sur Jeanne — un souvenir, une habitude, une nouvelle… Je vous poserai quelques questions.";
+
+    function renderAsstChat() {
+      const box = document.getElementById("asst-chat");
+      box.innerHTML = (asstMsgs.length ? asstMsgs : [{ role: "assistant", text: WELCOME }])
+        .map(m => `<div class="msg ${m.role}">${esc(m.text)}</div>`).join("");
+      box.scrollTop = box.scrollHeight;
+    }
+
+    async function asstSend() {
+      const inp = document.getElementById("asst-input");
+      const t = inp.value.trim(); if (!t) return;
+      inp.value = "";
+      asstMsgs.push({ role: "family", text: t });
+      asstMsgs.push({ role: "assistant", text: "…" });
+      renderAsstChat();
+      const btn = document.getElementById("asst-send"); btn.disabled = true;
+      try {
+        const r = await (await fetch("/family/assistant/chat", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: t }),
+        })).json();
+        asstMsgs[asstMsgs.length - 1] = { role: "assistant", text: r.reply || "…" };
+        appendAsstTrace({ tool: "💬 Réponse", why: r.why,
+                          input: { réponse: (r.reply || "").slice(0, 160) } });
+      } catch { asstMsgs[asstMsgs.length - 1] = { role: "assistant", text: "(erreur de connexion)" }; }
+      renderAsstChat(); btn.disabled = false; inp.focus();
+    }
+
+    const TARGET_META = {
+      memory: { ic: "🧠", l: "Souvenir" }, health: { ic: "🩺", l: "Santé" },
+      persona_note: { ic: "👤", l: "Profil" }, contact_detail: { ic: "👨‍👩‍👧", l: "Proche" },
+    };
+    function propDetail(p) {
+      const pl = p.payload || {};
+      if (p.type === "memory") return pl.text;
+      if (p.type === "health") return pl.observation;
+      if (p.type === "persona_note") return pl.text;
+      if (p.type === "contact_detail") return `${cap(pl.contact_id || "")} : ${pl.detail || ""}`;
+      return p.summary;
+    }
+    function propHTML(p) {
+      const t = TARGET_META[p.type] || { ic: "•", l: p.type };
+      return `<label class="prop">
+          <input type="checkbox" checked data-id="${p.id}" onchange="updateApplyCount()">
+          <span class="pmeta">${t.ic} ${t.l}</span>
+          <span class="ptext">${esc(propDetail(p) || "")}</span>
+        </label>`;
+    }
+    function selectedIds() {
+      return [...document.querySelectorAll("#prop-list input:checked")].map(x => x.dataset.id);
+    }
+    function updateApplyCount() {
+      const n = selectedIds().length, b = document.getElementById("asst-apply");
+      if (b) { b.textContent = `Valider les ${n} info(s) retenue(s)`; b.disabled = n === 0; }
+    }
+
+    async function asstFinish() {
+      const box = document.getElementById("asst-proposals");
+      box.style.display = "block";
+      box.innerHTML = '<span class="empty">Analyse de la conversation en cours…</span>';
+      const r = await (await fetch("/family/assistant/extract", { method: "POST" })).json();
+      const props = r.proposals || [];
+      if (!props.length) {
+        box.innerHTML = '<h2>Rien à ajouter</h2><p class="empty">Je n\'ai pas trouvé de nouvelle information à enregistrer. Continuez la conversation si vous voulez.</p>';
+        return;
+      }
+      box.innerHTML = `
+        <h2>Informations proposées (${props.length})</h2>
+        <p style="font-size:.86rem; color:var(--soft); margin-top:0">
+          Décochez celles qui sont fausses, puis validez le reste.</p>
+        <div id="prop-list">${props.map(propHTML).join("")}</div>
+        <button class="primary" id="asst-apply" style="margin-top:.7rem"></button>`;
+      document.getElementById("asst-apply").onclick = asstApply;
+      updateApplyCount();
+    }
+
+    // Entrée de trace repliable (même style que l'écran d'appel).
+    function makeTraceEntry(t) {
+      const d = document.createElement("div");
+      d.className = "call-trace";
+      const why = t.why ? esc(t.why) : "";
+      const details = t.input ? esc(JSON.stringify(t.input)).slice(0, 300) : "";
+      d.innerHTML =
+        '<div class="tr-head"><b>' + esc(t.tool) + "</b>" +
+        (why ? ' <button class="why-toggle" type="button">pourquoi ?</button>' : "") + "</div>" +
+        '<div class="why" hidden>' +
+          (why ? '<p class="why-txt">' + why + "</p>" : "") +
+          (details ? "<code>" + details + "</code>" : "") + "</div>";
+      const btn = d.querySelector(".why-toggle");
+      if (btn) btn.onclick = () => {
+        const w = d.querySelector(".why");
+        w.hidden = !w.hidden; btn.textContent = w.hidden ? "pourquoi ?" : "masquer";
+      };
+      return d;
+    }
+    function appendAsstTrace(entry) {
+      const box = document.getElementById("asst-agent-trace");
+      box.appendChild(makeTraceEntry(entry));
+      box.scrollTop = box.scrollHeight;
+    }
+
+    async function asstApply() {
+      const ids = selectedIds();
+      const b = document.getElementById("asst-apply");
+      b.disabled = true; b.textContent = "Enregistrement…";
+      const r = await (await fetch("/family/assistant/apply", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ approved_ids: ids }),
+      })).json();
+      document.getElementById("asst-proposals").innerHTML =
+        `<h2>✅ ${r.count} information(s) ajoutée(s) à la base</h2>
+         <p style="font-size:.9rem">C'est enregistré (voir « ce que fait l'agent » pour le détail).
+         Vous pouvez continuer la conversation pour en ajouter d'autres, ou démarrer une nouvelle.</p>`;
+      (r.trace || []).forEach(appendAsstTrace);   // les écritures rejoignent la trace de l'agent
+      document.getElementById("asst-agent-trace").style.display = "block";
+      document.getElementById("asst-trace-toggle").textContent = "🛠️ masquer ce que fait l'agent";
+      refresh();
+    }
+
+    async function startMode(mode) {
+      document.querySelectorAll(".mode-tab").forEach(b =>
+        b.classList.toggle("active", b.dataset.mode === mode));
+      const r = await (await fetch("/family/assistant/start", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode }),
+      })).json();
+      asstMsgs = [];
+      if (mode === "intake" && r.first) asstMsgs.push({ role: "assistant", text: r.first });
+      renderAsstChat();
+      document.getElementById("asst-agent-trace").innerHTML = "";   // trace repart à zéro
+      const box = document.getElementById("asst-proposals");
+      box.style.display = "none"; box.innerHTML = "";
+      const inp = document.getElementById("asst-input");
+      inp.placeholder = mode === "intake" ? "Votre réponse…" : "Racontez quelque chose sur Jeanne…";
+      inp.focus();
+    }
+
+    document.getElementById("asst-send").onclick = asstSend;
+    document.getElementById("asst-input").addEventListener("keydown", e => {
+      if (e.key === "Enter") { e.preventDefault(); asstSend(); }
+    });
+    document.getElementById("asst-finish").onclick = asstFinish;
+    document.getElementById("asst-reset").onclick = () => startMode("free");
+    document.getElementById("asst-trace-toggle").onclick = () => {
+      const box = document.getElementById("asst-agent-trace");
+      const shown = box.style.display !== "none";
+      box.style.display = shown ? "none" : "block";
+      document.getElementById("asst-trace-toggle").textContent =
+        shown ? "🛠️ voir ce que fait l'agent" : "🛠️ masquer ce que fait l'agent";
+    };
+    document.getElementById("mode-free").onclick = () => startMode("free");
+    document.getElementById("mode-intake").onclick = () => startMode("intake");
+
+    refresh();
+    setInterval(refresh, 5000);
+  </script>
+</body>
+</html>

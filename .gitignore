@@ -1,0 +1,6 @@
+.env
+__pycache__/
+chroma_index/
+tts_cache/
+data/active_contact.json
+.DS_Store

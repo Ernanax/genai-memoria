@@ -1,0 +1,8 @@
+flask
+anthropic
+python-dotenv
+mcp
+chromadb
+sentence-transformers
+httpx
+twilio
